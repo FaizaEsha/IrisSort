@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IrisSort — Classifying Iris Flowers Through Machine Learning</title>
+<meta name="description" content="A K-Nearest Neighbors classifier for the Iris dataset that trains and predicts live in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== Tokens ===== */
+:root {
+  --bg: #F8F4FB;
+  --surface: #FFFFFF;
+  --ink: #2B2340;
+  --ink-soft: #5B4E75;
+  --iris-deep: #4B3869;
+  --iris-mid: #7C6BA8;
+  --iris-pale: #D9CEEA;
+  --iris-pale-2: #EFE7F7;
+  --gold: #DFA83D;
+  --leaf: #6E8F72;
+  --set-color: #7C6BA8;
+  --ver-color: #4B3869;
+  --vir-color: #B0784F;
+
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  color: var(--iris-deep);
+  margin: 0;
+  font-weight: 600;
+}
+
+h1 { font-size: 3.4rem; line-height: 1.08; letter-spacing: -0.01em; }
+h2 { font-size: 2rem; margin-bottom: 8px; }
+h3 { font-size: 1.15rem; margin-bottom: 6px; }
+
+p { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+
+a { color: var(--iris-deep); }
+
+/* ===== Top bar ===== */
+.topbar {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--iris-pale);
+}
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wordmark {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: var(--iris-deep);
+}
+.topnav { display: flex; gap: 28px; }
+.topnav a {
+  text-decoration: none;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+.topnav a:hover { color: var(--iris-deep); }
+
+/* ===== Hero ===== */
+.hero { padding: 76px 0 64px; }
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+  align-items: center;
+}
+.hero-sub {
+  margin-top: 22px;
+  font-size: 1.08rem;
+  max-width: 44ch;
+}
+.hero-tag {
+  margin-top: 14px;
+  font-size: 0.9rem;
+  color: var(--iris-mid);
+  font-weight: 600;
+}
+.btn {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 13px 26px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-primary {
+  background: var(--iris-deep);
+  color: #fff;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(75, 56, 105, 0.25);
+}
+.hero-art { display: flex; justify-content: center; }
+.hero-art svg { width: 100%; max-width: 360px; height: auto; }
+
+/* ===== How it works ===== */
+.how { padding: 40px 0 76px; }
+.how h2 { text-align: left; }
+.how-flow {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  margin-top: 36px;
+}
+.how-step { flex: 1; }
+.how-icon {
+  color: var(--gold);
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+.how-step p { font-size: 0.94rem; }
+.how-arrow {
+  color: var(--iris-pale);
+  font-size: 1.6rem;
+  padding-top: 6px;
+}
+
+/* ===== Try It ===== */
+.try { padding: 60px 0 90px; background: var(--surface); border-top: 1px solid var(--iris-pale); border-bottom: 1px solid var(--iris-pale); }
+.section-sub { margin-top: 8px; margin-bottom: 34px; font-size: 1rem; }
+
+.try-panel {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 44px;
+  background: var(--iris-pale-2);
+  border: 1px solid var(--iris-pale);
+  border-radius: 18px;
+  padding: 32px;
+}
+
+.preset-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.preset-label {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+.preset-btn {
+  border: 1px solid var(--iris-mid);
+  background: transparent;
+  color: var(--iris-deep);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.preset-btn:hover { background: var(--iris-mid); color: #fff; }
+
+.slider-group { display: flex; flex-direction: column; gap: 20px; }
+.slider-row label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--iris-deep);
+  margin-bottom: 6px;
+}
+.slider-row label .val { color: var(--gold); font-family: var(--serif); }
+.slider-row input[type="range"] {
+  width: 100%;
+  accent-color: var(--iris-mid);
+}
+
+.result-stage { display: flex; flex-direction: column; gap: 22px; }
+.result-card {
+  background: var(--iris-deep);
+  border-radius: 14px;
+  padding: 26px 28px;
+  color: #fff;
+  transition: background 0.4s ease;
+}
+.result-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--iris-pale);
+  font-weight: 600;
+}
+.result-species {
+  display: block;
+  font-family: var(--serif);
+  font-size: 2rem;
+  margin: 4px 0 16px;
+}
+.vote-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.15);
+}
+.vote-seg { height: 100%; }
+.vote-caption {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: var(--iris-pale);
+}
+
+.scatter-wrap { background: var(--surface); border-radius: 14px; padding: 16px 18px; border: 1px solid var(--iris-pale); }
+.scatter-svg { width: 100%; height: auto; display: block; }
+.scatter-caption { font-size: 0.78rem; margin-top: 8px; color: var(--ink-soft); }
+
+/* ===== Specimen ledger ===== */
+.ledger { padding: 76px 0; }
+.ledger-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+.spec-card {
+  border-radius: 14px;
+  padding: 24px;
+  border: 1px solid var(--iris-pale);
+  background: var(--surface);
+  border-top: 4px solid var(--card-accent, var(--iris-mid));
+}
+.spec-card h3 { color: var(--card-accent, var(--iris-deep)); }
+.spec-card .spec-icon { margin-bottom: 12px; }
+.spec-card dl {
+  margin: 14px 0 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  font-size: 0.85rem;
+}
+.spec-card dt { color: var(--ink-soft); }
+.spec-card dd { margin: 0; font-weight: 700; color: var(--ink); }
+
+/* ===== Results ===== */
+.results { padding: 20px 0 90px; }
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 34px 0 40px;
+}
+.metric-block {
+  background: var(--surface);
+  border: 1px solid var(--iris-pale);
+  border-radius: 14px;
+  padding: 22px;
+  text-align: left;
+}
+.metric-num {
+  display: block;
+  font-family: var(--serif);
+  font-size: 2.2rem;
+  color: var(--iris-deep);
+}
+.metric-label { font-size: 0.85rem; color: var(--ink-soft); font-weight: 600; }
+
+.confusion-wrap { max-width: 480px; }
+.confusion-table {
+  border-collapse: collapse;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--iris-pale);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.confusion-table th, .confusion-table td {
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 0.85rem;
+  border: 1px solid var(--iris-pale-2);
+}
+.confusion-table th {
+  background: var(--iris-pale-2);
+  color: var(--iris-deep);
+  font-weight: 700;
+}
+.confusion-table td.diag {
+  background: rgba(110, 143, 114, 0.15);
+  font-weight: 700;
+  color: var(--leaf);
+}
+.confusion-caption { margin-top: 10px; font-size: 0.8rem; color: var(--ink-soft); }
+
+/* ===== Footer ===== */
+.site-footer {
+  border-top: 1px solid var(--iris-pale);
+  padding: 26px 0 40px;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 860px) {
+  h1 { font-size: 2.4rem; }
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-art { order: -1; }
+  .how-flow { flex-direction: column; }
+  .how-arrow { display: none; }
+  .try-panel { grid-template-columns: 1fr; }
+  .ledger-row { grid-template-columns: 1fr; }
+  .results-grid { grid-template-columns: 1fr; }
+  .footer-inner { flex-direction: column; }
+}
+
+/* ===== Accessibility ===== */
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <span class="wordmark">IrisSort</span>
+    <nav class="topnav">
+      <a href="#how">How it works</a>
+      <a href="#try">Try it</a>
+      <a href="#results">Results</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>Every petal<br>has an answer.</h1>
+        <p class="hero-sub">
+          IrisSort measures a flower's sepals and petals, compares them against
+          150 known specimens, and names the species — trained and evaluated
+          live, right here in your browser.
+        </p>
+        <p class="hero-tag">A K-Nearest Neighbors classifier, running on the classic Fisher Iris dataset.</p>
+        <a href="#try" class="btn btn-primary">Try the classifier</a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 300 360" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="petalGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7C6BA8"/>
+      <stop offset="100%" stop-color="#4B3869"/>
+    </linearGradient>
+  </defs>
+  <!-- three falling petals -->
+  <path d="M150 90 C90 90 50 150 90 230 C110 270 150 270 150 230 Z" fill="url(#petalGrad)" opacity="0.9" transform="rotate(0 150 180)"/>
+  <path d="M150 90 C90 90 50 150 90 230 C110 270 150 270 150 230 Z" fill="url(#petalGrad)" opacity="0.75" transform="rotate(120 150 180)"/>
+  <path d="M150 90 C90 90 50 150 90 230 C110 270 150 270 150 230 Z" fill="url(#petalGrad)" opacity="0.6" transform="rotate(240 150 180)"/>
+  <!-- upright standards -->
+  <path d="M150 90 C130 60 130 20 150 6 C170 20 170 60 150 90 Z" fill="#D9CEEA" opacity="0.9"/>
+  <path d="M150 90 C130 60 130 20 150 6 C170 20 170 60 150 90 Z" fill="#D9CEEA" opacity="0.6" transform="rotate(130 150 90)"/>
+  <path d="M150 90 C130 60 130 20 150 6 C170 20 170 60 150 90 Z" fill="#D9CEEA" opacity="0.6" transform="rotate(230 150 90)"/>
+  <!-- gold signal patches -->
+  <ellipse cx="150" cy="190" rx="8" ry="14" fill="#DFA83D" opacity="0.9"/>
+  <ellipse cx="150" cy="190" rx="8" ry="14" fill="#DFA83D" opacity="0.7" transform="rotate(120 150 180)"/>
+  <ellipse cx="150" cy="190" rx="8" ry="14" fill="#DFA83D" opacity="0.7" transform="rotate(240 150 180)"/>
+  <!-- stem -->
+  <line x1="150" y1="230" x2="150" y2="352" stroke="#6E8F72" stroke-width="4"/>
+  <path d="M150 300 C170 300 180 285 185 270" stroke="#6E8F72" stroke-width="3" fill="none"/>
+</svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <div class="wrap">
+      <h2>How a guess gets made</h2>
+      <div class="how-flow">
+        <div class="how-step">
+          <div class="how-icon">◈</div>
+          <h3>Measure</h3>
+          <p>Four numbers describe any iris: sepal length, sepal width, petal length, petal width — all in centimeters.</p>
+        </div>
+        <div class="how-arrow">→</div>
+        <div class="how-step">
+          <div class="how-icon">◈</div>
+          <h3>Compare</h3>
+          <p>Those four numbers are placed among 120 already-identified flowers, and the 5 closest matches are found.</p>
+        </div>
+        <div class="how-arrow">→</div>
+        <div class="how-step">
+          <div class="how-icon">◈</div>
+          <h3>Classify</h3>
+          <p>The 5 closest flowers vote on the species. Whichever species has the most votes wins.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="try" id="try">
+    <div class="wrap">
+      <h2>Try it yourself</h2>
+      <p class="section-sub">Drag the measurements, or load a real specimen from the dataset, and watch the neighbors vote.</p>
+
+      <div class="try-panel">
+        <div class="controls">
+
+          <div class="preset-row">
+            <span class="preset-label">Load a real specimen:</span>
+            <button class="preset-btn" data-species="0">Setosa</button>
+            <button class="preset-btn" data-species="1">Versicolor</button>
+            <button class="preset-btn" data-species="2">Virginica</button>
+          </div>
+
+          <div class="slider-group" id="sliders"></div>
+
+        </div>
+
+        <div class="result-stage">
+          <div class="result-card" id="resultCard">
+            <span class="result-label">IrisSort predicts</span>
+            <span class="result-species" id="resultSpecies">—</span>
+            <div class="vote-bar" id="voteBar"></div>
+            <p class="vote-caption" id="voteCaption"></p>
+          </div>
+          <div class="scatter-wrap">
+            <svg id="scatter" viewBox="0 0 320 280" class="scatter-svg"></svg>
+            <p class="scatter-caption">Petal length vs. petal width — your flower is the diamond. Lines connect it to its 5 nearest neighbors.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="ledger">
+    <div class="wrap">
+      <h2>Three species, at a glance</h2>
+      <div class="ledger-row" id="ledgerRow"></div>
+    </div>
+  </section>
+
+  <section class="results" id="results">
+    <div class="wrap">
+      <h2>How well does it actually work?</h2>
+      <p class="section-sub">
+        Computed just now, in this browser: the 150 flowers were shuffled,
+        split 80/20 into training and test sets, scaled, and scored with K = 5.
+      </p>
+
+      <div class="results-grid">
+        <div class="metric-block">
+          <span class="metric-num" id="metricAccuracy">—</span>
+          <span class="metric-label">Accuracy</span>
+        </div>
+        <div class="metric-block">
+          <span class="metric-num" id="metricF1">—</span>
+          <span class="metric-label">Weighted F1</span>
+        </div>
+        <div class="metric-block">
+          <span class="metric-num" id="metricTestSize">—</span>
+          <span class="metric-label">Test flowers</span>
+        </div>
+      </div>
+
+      <div class="confusion-wrap">
+        <table class="confusion-table" id="confusionTable"></table>
+        <p class="confusion-caption">Rows: actual species. Columns: predicted species.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>IrisSort — Faiza Ahmed Esha</span>
+    <span>Dataset: Fisher's Iris, 1936. Model: K-Nearest Neighbors.</span>
+  </div>
+</footer>
+
+<script>
+const IRIS_DATA = [
+[5.1,3.5,1.4,0.2,0],
+[4.9,3.0,1.4,0.2,0],
+[4.7,3.2,1.3,0.2,0],
+[4.6,3.1,1.5,0.2,0],
+[5.0,3.6,1.4,0.2,0],
+[5.4,3.9,1.7,0.4,0],
+[4.6,3.4,1.4,0.3,0],
+[5.0,3.4,1.5,0.2,0],
+[4.4,2.9,1.4,0.2,0],
+[4.9,3.1,1.5,0.1,0],
+[5.4,3.7,1.5,0.2,0],
+[4.8,3.4,1.6,0.2,0],
+[4.8,3.0,1.4,0.1,0],
+[4.3,3.0,1.1,0.1,0],
+[5.8,4.0,1.2,0.2,0],
+[5.7,4.4,1.5,0.4,0],
+[5.4,3.9,1.3,0.4,0],
+[5.1,3.5,1.4,0.3,0],
+[5.7,3.8,1.7,0.3,0],
+[5.1,3.8,1.5,0.3,0],
+[5.4,3.4,1.7,0.2,0],
+[5.1,3.7,1.5,0.4,0],
+[4.6,3.6,1.0,0.2,0],
+[5.1,3.3,1.7,0.5,0],
+[4.8,3.4,1.9,0.2,0],
+[5.0,3.0,1.6,0.2,0],
+[5.0,3.4,1.6,0.4,0],
+[5.2,3.5,1.5,0.2,0],
+[5.2,3.4,1.4,0.2,0],
+[4.7,3.2,1.6,0.2,0],
+[4.8,3.1,1.6,0.2,0],
+[5.4,3.4,1.5,0.4,0],
+[5.2,4.1,1.5,0.1,0],
+[5.5,4.2,1.4,0.2,0],
+[4.9,3.1,1.5,0.2,0],
+[5.0,3.2,1.2,0.2,0],
+[5.5,3.5,1.3,0.2,0],
+[4.9,3.6,1.4,0.1,0],
+[4.4,3.0,1.3,0.2,0],
+[5.1,3.4,1.5,0.2,0],
+[5.0,3.5,1.3,0.3,0],
+[4.5,2.3,1.3,0.3,0],
+[4.4,3.2,1.3,0.2,0],
+[5.0,3.5,1.6,0.6,0],
+[5.1,3.8,1.9,0.4,0],
+[4.8,3.0,1.4,0.3,0],
+[5.1,3.8,1.6,0.2,0],
+[4.6,3.2,1.4,0.2,0],
+[5.3,3.7,1.5,0.2,0],
+[5.0,3.3,1.4,0.2,0],
+[7.0,3.2,4.7,1.4,1],
+[6.4,3.2,4.5,1.5,1],
+[6.9,3.1,4.9,1.5,1],
+[5.5,2.3,4.0,1.3,1],
+[6.5,2.8,4.6,1.5,1],
+[5.7,2.8,4.5,1.3,1],
+[6.3,3.3,4.7,1.6,1],
+[4.9,2.4,3.3,1.0,1],
+[6.6,2.9,4.6,1.3,1],
+[5.2,2.7,3.9,1.4,1],
+[5.0,2.0,3.5,1.0,1],
+[5.9,3.0,4.2,1.5,1],
+[6.0,2.2,4.0,1.0,1],
+[6.1,2.9,4.7,1.4,1],
+[5.6,2.9,3.6,1.3,1],
+[6.7,3.1,4.4,1.4,1],
+[5.6,3.0,4.5,1.5,1],
+[5.8,2.7,4.1,1.0,1],
+[6.2,2.2,4.5,1.5,1],
+[5.6,2.5,3.9,1.1,1],
+[5.9,3.2,4.8,1.8,1],
+[6.1,2.8,4.0,1.3,1],
+[6.3,2.5,4.9,1.5,1],
+[6.1,2.8,4.7,1.2,1],
+[6.4,2.9,4.3,1.3,1],
+[6.6,3.0,4.4,1.4,1],
+[6.8,2.8,4.8,1.4,1],
+[6.7,3.0,5.0,1.7,1],
+[6.0,2.9,4.5,1.5,1],
+[5.7,2.6,3.5,1.0,1],
+[5.5,2.4,3.8,1.1,1],
+[5.5,2.4,3.7,1.0,1],
+[5.8,2.7,3.9,1.2,1],
+[6.0,2.7,5.1,1.6,1],
+[5.4,3.0,4.5,1.5,1],
+[6.0,3.4,4.5,1.6,1],
+[6.7,3.1,4.7,1.5,1],
+[6.3,2.3,4.4,1.3,1],
+[5.6,3.0,4.1,1.3,1],
+[5.5,2.5,4.0,1.3,1],
+[5.5,2.6,4.4,1.2,1],
+[6.1,3.0,4.6,1.4,1],
+[5.8,2.6,4.0,1.2,1],
+[5.0,2.3,3.3,1.0,1],
+[5.6,2.7,4.2,1.3,1],
+[5.7,3.0,4.2,1.2,1],
+[5.7,2.9,4.2,1.3,1],
+[6.2,2.9,4.3,1.3,1],
+[5.1,2.5,3.0,1.1,1],
+[5.7,2.8,4.1,1.3,1],
+[6.3,3.3,6.0,2.5,2],
+[5.8,2.7,5.1,1.9,2],
+[7.1,3.0,5.9,2.1,2],
+[6.3,2.9,5.6,1.8,2],
+[6.5,3.0,5.8,2.2,2],
+[7.6,3.0,6.6,2.1,2],
+[4.9,2.5,4.5,1.7,2],
+[7.3,2.9,6.3,1.8,2],
+[6.7,2.5,5.8,1.8,2],
+[7.2,3.6,6.1,2.5,2],
+[6.5,3.2,5.1,2.0,2],
+[6.4,2.7,5.3,1.9,2],
+[6.8,3.0,5.5,2.1,2],
+[5.7,2.5,5.0,2.0,2],
+[5.8,2.8,5.1,2.4,2],
+[6.4,3.2,5.3,2.3,2],
+[6.5,3.0,5.5,1.8,2],
+[7.7,3.8,6.7,2.2,2],
+[7.7,2.6,6.9,2.3,2],
+[6.0,2.2,5.0,1.5,2],
+[6.9,3.2,5.7,2.3,2],
+[5.6,2.8,4.9,2.0,2],
+[7.7,2.8,6.7,2.0,2],
+[6.3,2.7,4.9,1.8,2],
+[6.7,3.3,5.7,2.1,2],
+[7.2,3.2,6.0,1.8,2],
+[6.2,2.8,4.8,1.8,2],
+[6.1,3.0,4.9,1.8,2],
+[6.4,2.8,5.6,2.1,2],
+[7.2,3.0,5.8,1.6,2],
+[7.4,2.8,6.1,1.9,2],
+[7.9,3.8,6.4,2.0,2],
+[6.4,2.8,5.6,2.2,2],
+[6.3,2.8,5.1,1.5,2],
+[6.1,2.6,5.6,1.4,2],
+[7.7,3.0,6.1,2.3,2],
+[6.3,3.4,5.6,2.4,2],
+[6.4,3.1,5.5,1.8,2],
+[6.0,3.0,4.8,1.8,2],
+[6.9,3.1,5.4,2.1,2],
+[6.7,3.1,5.6,2.4,2],
+[6.9,3.1,5.1,2.3,2],
+[5.8,2.7,5.1,1.9,2],
+[6.8,3.2,5.9,2.3,2],
+[6.7,3.3,5.7,2.5,2],
+[6.7,3.0,5.2,2.3,2],
+[6.3,2.5,5.0,1.9,2],
+[6.5,3.0,5.2,2.0,2],
+[6.2,3.4,5.4,2.3,2],
+[5.9,3.0,5.1,1.8,2]
+];
+
+// 0 = setosa, 1 = versicolor, 2 = virginica
+
+</script>
+<script>
+/* =========================================================
+   IrisSort — the whole pipeline runs right here, in this file.
+   No backend, no build step: shuffle -> split -> scale ->
+   train (KNN just means "remember the training points") ->
+   predict -> score. Reload the page and watch it happen again.
+   ========================================================= */
+
+const SPECIES = ['setosa', 'versicolor', 'virginica'];
+const SPECIES_LABEL = ['Setosa', 'Versicolor', 'Virginica'];
+const FEATURE_NAMES = ['Sepal length', 'Sepal width', 'Petal length', 'Petal width'];
+const FEATURE_RANGES = [
+  { min: 4.3, max: 7.9 },
+  { min: 2.0, max: 4.4 },
+  { min: 1.0, max: 6.9 },
+  { min: 0.1, max: 2.5 },
+];
+const K = 5;
+
+/* ---------- small, boring math helpers ---------- */
+
+// A seeded PRNG so the split is reproducible-in-spirit but still
+// genuinely shuffles on every load (feel free to change the seed).
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffle(array, rng) {
+  const a = array.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function mean(values) { return values.reduce((s, v) => s + v, 0) / values.length; }
+function std(values, m) {
+  const variance = values.reduce((s, v) => s + (v - m) ** 2, 0) / values.length;
+  return Math.sqrt(variance);
+}
+
+function euclidean(a, b) {
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) sum += (a[i] - b[i]) ** 2;
+  return Math.sqrt(sum);
+}
+
+/* ---------- the "model": scaler + K nearest neighbors ---------- */
+
+function fitScaler(rows) {
+  const dims = rows[0].length;
+  const means = [], stds = [];
+  for (let d = 0; d < dims; d++) {
+    const col = rows.map(r => r[d]);
+    const m = mean(col);
+    means.push(m);
+    stds.push(std(col, m) || 1); // guard divide-by-zero
+  }
+  return { means, stds };
+}
+
+function applyScaler(scaler, row) {
+  return row.map((v, i) => (v - scaler.means[i]) / scaler.stds[i]);
+}
+
+// Returns the k nearest {point, label, distance} from `pool`, closest first.
+function nearestNeighbors(pool, poolScaled, queryScaled, k) {
+  const distances = poolScaled.map((p, i) => ({
+    index: i,
+    distance: euclidean(p, queryScaled),
+  }));
+  distances.sort((a, b) => a.distance - b.distance);
+  return distances.slice(0, k).map(d => ({
+    ...d,
+    raw: pool[d.index],
+    label: pool[d.index][4],
+  }));
+}
+
+function classifyByVote(neighbors) {
+  const counts = [0, 0, 0];
+  neighbors.forEach(n => counts[n.label]++);
+  const winner = counts.indexOf(Math.max(...counts));
+  return { winner, counts };
+}
+
+/* ---------- build the model once, on page load ---------- */
+
+const rng = mulberry32(Date.now() & 0xffffffff);
+const shuffled = shuffle(IRIS_DATA, rng);
+const splitAt = Math.floor(shuffled.length * 0.8);
+const trainSet = shuffled.slice(0, splitAt);   // e.g. 120 flowers
+const testSet = shuffled.slice(splitAt);        // e.g. 30 flowers
+
+const scaler = fitScaler(trainSet.map(r => r.slice(0, 4)));
+const trainScaled = trainSet.map(r => applyScaler(scaler, r.slice(0, 4)));
+const testScaled = testSet.map(r => applyScaler(scaler, r.slice(0, 4)));
+
+/* ---------- evaluate on the held-out test set ---------- */
+
+function evaluate() {
+  const confusion = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]; // [actual][predicted]
+  let correct = 0;
+
+  testSet.forEach((row, i) => {
+    const neighbors = nearestNeighbors(trainSet, trainScaled, testScaled[i], K);
+    const { winner } = classifyByVote(neighbors);
+    confusion[row[4]][winner]++;
+    if (winner === row[4]) correct++;
+  });
+
+  const accuracy = correct / testSet.length;
+
+  // weighted F1 across the 3 classes
+  let weightedF1 = 0;
+  for (let c = 0; c < 3; c++) {
+    const tp = confusion[c][c];
+    const fp = confusion.reduce((s, row, r) => s + (r !== c ? row[c] : 0), 0);
+    const fn = confusion[c].reduce((s, v, p) => s + (p !== c ? v : 0), 0);
+    const support = confusion[c].reduce((s, v) => s + v, 0);
+    const precision = tp + fp === 0 ? 0 : tp / (tp + fp);
+    const recall = tp + fn === 0 ? 0 : tp / (tp + fn);
+    const f1 = precision + recall === 0 ? 0 : (2 * precision * recall) / (precision + recall);
+    weightedF1 += f1 * (support / testSet.length);
+  }
+
+  return { confusion, accuracy, f1: weightedF1 };
+}
+
+const evalResult = evaluate();
+
+/* ---------- render: results section ---------- */
+
+document.getElementById('metricAccuracy').textContent = (evalResult.accuracy * 100).toFixed(1) + '%';
+document.getElementById('metricF1').textContent = evalResult.f1.toFixed(3);
+document.getElementById('metricTestSize').textContent = testSet.length;
+
+(function renderConfusion() {
+  const table = document.getElementById('confusionTable');
+  let html = '<tr><th></th>' + SPECIES_LABEL.map(s => `<th>${s}</th>`).join('') + '</tr>';
+  evalResult.confusion.forEach((row, r) => {
+    html += `<tr><th>${SPECIES_LABEL[r]}</th>` +
+      row.map((v, c) => `<td class="${r === c ? 'diag' : ''}">${v}</td>`).join('') +
+      '</tr>';
+  });
+  table.innerHTML = html;
+})();
+
+/* ---------- render: specimen ledger (computed from the data, not hardcoded) ---------- */
+
+(function renderLedger() {
+  const container = document.getElementById('ledgerRow');
+  const accents = ['#7C6BA8', '#4B3869', '#B0784F'];
+  const icons = [
+    // small, rounded petal — setosa is the compact one
+    `<svg width="34" height="34" viewBox="0 0 34 34"><path d="M17 4 C24 4 28 12 17 30 C6 12 10 4 17 4 Z" fill="none" stroke="#7C6BA8" stroke-width="2"/></svg>`,
+    // medium
+    `<svg width="34" height="34" viewBox="0 0 34 34"><path d="M17 2 C27 2 31 14 17 32 C3 14 7 2 17 2 Z" fill="none" stroke="#4B3869" stroke-width="2"/></svg>`,
+    // largest, elongated — virginica
+    `<svg width="34" height="34" viewBox="0 0 34 34"><path d="M17 1 C29 1 32 15 17 33 C2 15 5 1 17 1 Z" fill="none" stroke="#B0784F" stroke-width="2"/></svg>`,
+  ];
+
+  SPECIES.forEach((sp, i) => {
+    const rows = IRIS_DATA.filter(r => r[4] === i);
+    const petalLen = rows.map(r => r[2]);
+    const petalWid = rows.map(r => r[3]);
+    const card = document.createElement('div');
+    card.className = 'spec-card';
+    card.style.setProperty('--card-accent', accents[i]);
+    card.innerHTML = `
+      <div class="spec-icon">${icons[i]}</div>
+      <h3>${SPECIES_LABEL[i]}</h3>
+      <p>Iris ${sp}</p>
+      <dl>
+        <dt>Petal length</dt><dd>${Math.min(...petalLen).toFixed(1)}–${Math.max(...petalLen).toFixed(1)} cm</dd>
+        <dt>Petal width</dt><dd>${Math.min(...petalWid).toFixed(1)}–${Math.max(...petalWid).toFixed(1)} cm</dd>
+        <dt>Specimens</dt><dd>${rows.length} in dataset</dd>
+      </dl>
+    `;
+    container.appendChild(card);
+  });
+})();
+
+/* ---------- render: sliders ---------- */
+
+let current = [5.8, 3.0, 3.8, 1.2]; // a roughly-average starting flower
+
+function buildSliders() {
+  const group = document.getElementById('sliders');
+  FEATURE_NAMES.forEach((name, i) => {
+    const row = document.createElement('div');
+    row.className = 'slider-row';
+    row.innerHTML = `
+      <label for="slider-${i}">${name} <span class="val" id="val-${i}">${current[i].toFixed(1)} cm</span></label>
+      <input type="range" id="slider-${i}" min="${FEATURE_RANGES[i].min}" max="${FEATURE_RANGES[i].max}"
+             step="0.1" value="${current[i]}">
+    `;
+    group.appendChild(row);
+    row.querySelector('input').addEventListener('input', (e) => {
+      current[i] = parseFloat(e.target.value);
+      document.getElementById(`val-${i}`).textContent = current[i].toFixed(1) + ' cm';
+      updatePrediction();
+    });
+  });
+}
+
+/* ---------- render: live prediction + vote bar + scatter plot ---------- */
+
+const voteColors = ['#7C6BA8', '#4B3869', '#B0784F'];
+
+function updatePrediction() {
+  const scaledQuery = applyScaler(scaler, current);
+  const neighbors = nearestNeighbors(trainSet, trainScaled, scaledQuery, K);
+  const { winner, counts } = classifyByVote(neighbors);
+
+  document.getElementById('resultSpecies').textContent = SPECIES_LABEL[winner];
+
+  const bar = document.getElementById('voteBar');
+  bar.innerHTML = counts.map((c, i) => c > 0
+    ? `<div class="vote-seg" style="width:${(c / K) * 100}%; background:${voteColors[i]}"></div>`
+    : '').join('');
+
+  document.getElementById('voteCaption').textContent =
+    `${counts[0]} Setosa · ${counts[1]} Versicolor · ${counts[2]} Virginica — among the ${K} nearest neighbors`;
+
+  drawScatter(neighbors);
+}
+
+/* Petal length (x) vs petal width (y) — the two most separating features. */
+function drawScatter(neighbors) {
+  const svg = document.getElementById('scatter');
+  const W = 320, H = 280, PAD = 30;
+  const xr = FEATURE_RANGES[2], yr = FEATURE_RANGES[3];
+
+  const toX = v => PAD + ((v - xr.min) / (xr.max - xr.min)) * (W - 2 * PAD);
+  const toY = v => H - PAD - ((v - yr.min) / (yr.max - yr.min)) * (H - 2 * PAD);
+
+  let dots = trainSet.map(r => {
+    const cx = toX(r[2]), cy = toY(r[3]);
+    return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="3.4" fill="${voteColors[r[4]]}" opacity="0.55"></circle>`;
+  }).join('');
+
+  const qx = toX(current[2]), qy = toY(current[3]);
+
+  let lines = neighbors.map(n => {
+    const nx = toX(n.raw[2]), ny = toY(n.raw[3]);
+    return `<line x1="${qx.toFixed(1)}" y1="${qy.toFixed(1)}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="#DFA83D" stroke-width="1" opacity="0.6"></line>`;
+  }).join('');
+
+  const axisLine = `<line x1="${PAD}" y1="${H - PAD}" x2="${W - PAD}" y2="${H - PAD}" stroke="#D9CEEA"></line>
+                     <line x1="${PAD}" y1="${PAD}" x2="${PAD}" y2="${H - PAD}" stroke="#D9CEEA"></line>
+                     <text x="${W / 2}" y="${H - 6}" font-size="10" fill="#5B4E75" text-anchor="middle">Petal length (cm)</text>
+                     <text x="10" y="${H / 2}" font-size="10" fill="#5B4E75" text-anchor="middle" transform="rotate(-90 10 ${H / 2})">Petal width (cm)</text>`;
+
+  const marker = `<path d="M ${qx} ${qy - 7} L ${qx + 7} ${qy} L ${qx} ${qy + 7} L ${qx - 7} ${qy} Z"
+                        fill="#2B2340" stroke="#fff" stroke-width="1.5"></path>`;
+
+  svg.innerHTML = axisLine + dots + lines + marker;
+}
+
+/* ---------- preset buttons: load a real specimen ---------- */
+
+function wirePresets() {
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const species = parseInt(btn.dataset.species, 10);
+      const matches = IRIS_DATA.filter(r => r[4] === species);
+      const pick = matches[Math.floor(Math.random() * matches.length)];
+      current = pick.slice(0, 4);
+      FEATURE_NAMES.forEach((_, i) => {
+        document.getElementById(`slider-${i}`).value = current[i];
+        document.getElementById(`val-${i}`).textContent = current[i].toFixed(1) + ' cm';
+      });
+      updatePrediction();
+    });
+  });
+}
+
+/* ---------- go ---------- */
+
+buildSliders();
+wirePresets();
+updatePrediction();
+
+</script>
+</body>
+</html>
