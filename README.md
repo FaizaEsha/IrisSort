@@ -44,7 +44,7 @@ The dataset is embedded directly in the page.
 ![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
-Plain HTML, CSS, and JavaScript. No frameworks, no dependencies.
+No frameworks, no dependencies.
 
 ## ✍️ Author
 
