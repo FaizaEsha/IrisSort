@@ -1,52 +1,61 @@
 # 🌸 IrisSort
 
-Classifying Iris flowers through machine learning, entirely in the browser.
+> A supervised learning pipeline that classifies Iris flowers by species, built as a Python notebook, then reimplemented as a dependency-free interactive site.
 
-## 🔍 Overview
+## 📖 About
 
-IrisSort is a self-contained implementation of a K-Nearest Neighbors
-classifier trained on Fisher's Iris dataset, built as Project 2 (*Data
-Classification Using AI*) for the DecodeLabs.
+IrisSort classifies Iris flowers into one of three species (*Setosa*, *Versicolor*, *Virginica*) using their sepal and petal measurements. It was built as **Project 2: Data Classification Using AI** for the DecodeLabs AI Engineering Internship, Batch 2026.
 
-There is no backend, no build step, and no external ML library. The
-entire pipeline, from data shuffling to prediction, is written in plain
-JavaScript and runs the moment the page loads.
+The repo contains two things:
 
-## ⚙️ How it works
+- **`Iris_Classification__Project2_.ipynb`** — the actual assignment: a Python notebook covering the full supervised learning pipeline (load → explore → split → scale → train → evaluate) using scikit-learn.
+- **`index.html`** — a self-contained, dependency-free reimplementation of the same KNN pipeline in plain JavaScript, built afterward as an interactive extension so the same logic can be explored live in a browser.
 
-On every load, the page:
+## ✦ Highlights
 
-1. 🔀 **Shuffles** all 150 flowers to remove any ordering bias in the dataset.
-2. ✂️ **Splits** them 80/20 into a training set and a held-out test set.
-3. 📏 **Standardizes** the four measurements (sepal length/width, petal
-   length/width) to mean 0 and standard deviation 1, fitted on the
-   training set only.
-4. 🌱 **Classifies** the test set using K-Nearest Neighbors (K = 5).
-5. 📊 **Reports** accuracy, weighted F1 score, and a full confusion matrix.
+- 📊 **Full ML pipeline** — EDA, feature scaling, stratified train/test split, KNN classification
+- 🔍 **K exploration** — tests K = 1 to 20 and plots the error curve instead of assuming K = 5
+- 📈 **Evaluation** — accuracy, weighted F1, confusion matrix, full classification report
+- 🌱 **Custom prediction** — tests the trained model on a hand-picked flower outside the dataset
+- 🖱️ **Interactive site** — sliders to build your own flower and watch live KNN voting on a scatter plot
 
-Because the train/test split is re-shuffled on every load, accuracy
-naturally varies slightly from run to run — this is expected behavior
-for a proper random split, not inconsistency.
+## 🛠️ Built With
 
-An interactive panel also lets you adjust the four measurements by hand
-and watch which training flowers "vote" on the resulting species,
-visualized on a live scatter plot.
+- **Python** — pandas, NumPy, scikit-learn, Matplotlib *(notebook)*
+- **HTML / CSS / JavaScript** — no frameworks, no dependencies *(interactive site)*
 
-## 🌿 Dataset
+## ⚙️ How It Works
 
-Fisher's Iris dataset (1936) — 150 samples, 3 balanced classes
-(*Setosa*, *Versicolor*, *Virginica*), 4 numeric features per sample.
-The dataset is embedded directly in the page.
+**Load Iris dataset → EDA → Standardize features → Stratified 80/20 split → K-Nearest Neighbors (K = 5) → Evaluate on held-out test set**
 
-## 🛠️ Tech stack
+Both the notebook and the site follow this exact pipeline — the site simply re-derives it in the browser instead of relying on scikit-learn, so its accuracy naturally varies slightly on each reload since it reshuffles the split live.
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+## 🚀 Getting Started
 
-No frameworks, no dependencies.
+### Run the notebook
+
+1. Clone the repo:
+   ```
+   git clone https://github.com/FaizaEsha/IrisSort.git
+   ```
+2. Open `Iris_Classification__Project2_.ipynb` in Jupyter Notebook, JupyterLab, or upload it to Google Colab.
+3. Run all cells top to bottom.
+
+No dataset download needed — the Iris dataset loads directly from scikit-learn.
+
+### Run the interactive site
+
+**Locally:** download `index.html` and open it directly in any browser — no install, no build step.
+
+## 📁 Project Structure
+
+```
+├── Iris_Classification__Project2_.ipynb   # Python notebook — the core assignment
+├── index.html                              # Interactive browser version (JS, no dependencies)
+└── README.md
+```
 
 ## ✍️ Author
 
-Built by **Faiza Ahmed Esha** as a Project for the
-DecodeLabs AI Engineering Internship, Batch 2026.
+**Faiza Ahmed Esha**
+DecodeLabs AI Engineering Internship, Batch 2026
