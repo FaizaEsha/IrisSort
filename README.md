@@ -1,14 +1,14 @@
 # 🌸 IrisSort
 
-Classifying Iris flowers through machine learning — entirely in the browser.
+Classifying Iris flowers through machine learning, entirely in the browser.
 
 ## 🔍 Overview
 
 IrisSort is a self-contained implementation of a K-Nearest Neighbors
 classifier trained on Fisher's Iris dataset, built as Project 2 (*Data
-Classification Using AI*) for the DecodeLabs Industrial Training Kit.
+Classification Using AI*) for the DecodeLabs.
 
-There is no backend, no build step, and no external ML library — the
+There is no backend, no build step, and no external ML library. The
 entire pipeline, from data shuffling to prediction, is written in plain
 JavaScript and runs the moment the page loads.
 
@@ -41,12 +41,12 @@ The dataset is embedded directly in the page.
 ## 🛠️ Tech stack
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
 Plain HTML, CSS, and JavaScript. No frameworks, no dependencies.
 
 ## ✍️ Author
 
-Built by **Faiza Ahmed Esha** as a Project 2(Industrial Training Kit) submission for the
+Built by **Faiza Ahmed Esha** as a Project for the
 DecodeLabs AI Engineering Internship, Batch 2026.
