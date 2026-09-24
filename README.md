@@ -4,8 +4,7 @@
 
 ## 📖 About
 
-IrisSort classifies Iris flowers into one of three species (*Setosa*, *Versicolor*, *Virginica*) using their sepal and petal measurements. It was built as **Project 2: Data Classification Using AI** for the DecodeLabs AI Engineering Internship, Batch 2026.
-
+IrisSort classifies Iris flowers into one of three species (*Setosa*, *Versicolor*, *Virginica*) using their sepal and petal measurements.
 The repo contains two things:
 
 - **`Iris_Classification__Project2_.ipynb`** — the actual assignment: a Python notebook covering the full supervised learning pipeline (load → explore → split → scale → train → evaluate) using scikit-learn.
@@ -58,4 +57,3 @@ No dataset download needed — the Iris dataset loads directly from scikit-learn
 ## ✍️ Author
 
 **Faiza Ahmed Esha**
-DecodeLabs AI Engineering Internship, Batch 2026
